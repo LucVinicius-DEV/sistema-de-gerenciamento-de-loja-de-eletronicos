@@ -27,6 +27,25 @@ public class Main {
         List<SaleItem> saleItems = new ArrayList<>();
         List<Product> productList = new ArrayList<>();
 
+        // Adicionar produtos e clientes iniciais (opcional)
+        // Implementar lógica
+        
+        ElectronicProduct product1 = new ElectronicProduct("Smartphone", 1500.0, 10, "Samsung", "Galaxy S21", ProductCategory.SMARTPHONE);
+        products.add(product1);
+        
+        ElectronicProduct product2 = new ElectronicProduct("Notebook", 3000.0, 5, "Dell", "XPS 13", ProductCategory.LAPTOP);
+        products.add(product2);
+        
+        Customer customer1 = new Customer("João Silva", "joao.silva@example.com", "123456789");
+        customers.add(customer1);
+        
+        Customer customer2 = new Customer("Maria Souza", "maria.souza@example.com", "987654321");
+        customers.add(customer2);
+        
+        Customer customer3 = new Customer("Pedro Santos", "pedro.santos@example.com", "123456789");
+        customers.add(customer3);
+        
+
         // Menu principal
 
         int option = 0;
@@ -104,9 +123,9 @@ public class Main {
                     // atribui data e hora do sistema a venda
                     Date moment = new Date();
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-                    System.out.println("Data e hora da venda: " + sdf.format(moment));
+                    
 
-                    // Seleciona o cliente
+                    // Seleciona o cliente 
                     System.out.println("Selecione o cliente (digite o número correspondente): ");
                     for (int i = 0; i < customers.size(); i++) {
                         System.out.println((i + 1) + ". " + customers.get(i));
@@ -114,25 +133,31 @@ public class Main {
                     int customerIndex = sc.nextInt() - 1;
                     Customer selectedCustomer = customers.get(customerIndex);
                     sc.nextLine();
+                   
                     
                     // Criação do objeto venda
+                    
                     Sale sale = new Sale(id, moment, selectedCustomer);
 
-                    // Adiciona itens à venda
-                    System.out.println("Qual o produto da venda? (digite o número correspondente):");
+                    
+
+                    // Adiciona itens à venda 
+                    System.out.println("Selecione o produto (digite o número correspondente): ");
                     for (int i = 0; i < products.size(); i++) {
                         System.out.println((i + 1) + ". " + products.get(i));
                     }
                     int productIndex = sc.nextInt() - 1;
                     ElectronicProduct selectedProduct = products.get(productIndex);
                     sc.nextLine();
-
-                    System.out.println("Qual a quantidade do produto?");
+                    System.out.println("Digite a quantidade vendida: ");
                     int quantitySale = sc.nextInt();
-                    sc.nextLine();
-
+                    
                     // Removendo produto do estoque apos a venda
+                    
+                    
                     selectedProduct.removeFromStock(quantitySale);
+                    sc.nextLine();
+                    
 
                     // Criação do objeto item de venda
                     SaleItem saleItem = new SaleItem(selectedProduct, quantitySale, selectedProduct.getPrice());
