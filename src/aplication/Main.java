@@ -10,6 +10,7 @@ import java.util.Scanner;
 
 import entities.Customer;
 import entities.ElectronicProduct;
+import entities.Product;
 import entities.Sale;
 import entities.SaleItem;
 import entities.enums.ProductCategory;
@@ -23,35 +24,13 @@ public class Main {
         List<ElectronicProduct> products = new ArrayList<>();
         List<Customer> customers = new ArrayList<>();
         List<Sale> sales = new ArrayList<>();
-
-        // Pré-cadastro de alguns produtos para teste
-        ElectronicProduct p1 = new ElectronicProduct();
-        p1.setName("Smartphone");
-        p1.setBrand("Samsung");
-        p1.setModel("Galaxy S21");
-        p1.setPrice(3999.99);
-        p1.setQuantity(10);
-        p1.setCategory(ProductCategory.SMARTPHONE);
-        products.add(p1);
-
-        ElectronicProduct p2 = new ElectronicProduct();
-        p2.setName("Notebook");
-        p2.setBrand("Dell");
-        p2.setModel("Inspiron 15");
-        p2.setPrice(4500.00);
-        p2.setQuantity(5);
-        p2.setCategory(ProductCategory.LAPTOP);
-        products.add(p2);
-
-        // Pré-cadastro de um cliente para teste
-        Customer c1 = new Customer();
-        c1.setName("João Silva");
-        c1.setEmail("joao@email.com");
-        c1.setPhone("(11) 98765-4321");
-        customers.add(c1);
+        List<SaleItem> saleItems = new ArrayList<>();
+        List<Product> productList = new ArrayList<>();
 
         // Menu principal
+
         int option = 0;
+        // Loop principal do menu
         do {
             System.out.println("\n===== SISTEMA DE GERENCIAMENTO DE LOJA =====");
             System.out.println("1. Cadastrar novo produto");
@@ -115,61 +94,77 @@ public class Main {
                     break;
                 case 3:
                     // Registrar venda
+                    // implementar a logica
 
-                    // Lê os dados da venda
-                    System.out.println("Digite o ID do cliente: ");
-                    int customerId = sc.nextInt();
-                    sc.nextLine();
-                    Customer customerSale = customers.get(customerId - 1); // Obtém o cliente pelo ID
-
-                    System.out.println("Digite a data da venda (dd/MM/yyyy HH:mm): ");
-                    String dateString = sc.nextLine(); // Lê a data como string
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm"); // Define o formato da data
-                    Date moment = sdf.parse(dateString); // Converte a string para Date
-
-                    Sale sale = new Sale((long) (sales.size() + 1), moment, customerSale); // Criação do objeto
-
-                    System.out.println("Digite o número de itens da venda: ");
-                    int numItems = sc.nextInt(); // Lê o número de itens da venda
+                    // Le os dados da venda
+                    System.out.println("Digite o ID da venda: ");
+                    Long id = sc.nextLong();
                     sc.nextLine(); // Consumir quebra de linha
 
-                    for (int i = 0; i < numItems; i++) { // Lê os dados de cada item da venda
-                        System.out.println("Item #" + (i + 1) + ":");
-                        System.out.println("Digite o ID do produto: ");
-                        int productId = sc.nextInt(); // Lê o ID do produto
-                        sc.nextLine(); // Consumir quebra de linha
+                    // Le a data e hora da venda
+                    System.out.println("Digite a data e hora da venda (dd/MM/yyyy HH:mm): ");
+                    String momentStr = sc.nextLine();
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+                    Date moment = sdf.parse(momentStr);
 
-                        ElectronicProduct productSale = products.get(productId - 1); // Obtém o produto pelo ID
+                    // Le o nome do cliente
+                    System.out.println("Digite o nome do cliente: ");
+                    String customerName = sc.nextLine();
+                    Customer customerSale = null;
+                    for (Customer c : customers) {
+                        if (c.getName().equalsIgnoreCase(customerName)) {
+                            customerSale = c;
+                            break;
+                        }
 
-                        System.out.println("Digite a quantidade vendida: ");
-                        int quantitySale = sc.nextInt(); // Lê a quantidade vendida
-                        sc.nextLine(); // Consumir quebra de linha
+                        // Se o cliente não for encontrado, exibe uma mensagem de erro e volta ao menu
+                        if (customerSale == null) {
+                            System.out.println("Cliente não encontrado!");
+                            break;
+                        }
+                        // Criação do objeto Sale
+                        Sale sale = new Sale(id, moment, customerSale);
 
-                        // Verifica se há estoque suficiente
-                        if (productSale.getQuantity() >= quantitySale) {
-                            // Usa o preço atual do produto
-                            Double priceSale = productSale.getPrice();
+                        // Le os itens da venda
+                        System.out.println("Digite o número de itens da venda: ");
+                        int n = sc.nextInt();
+                        sc.nextLine();
 
-                            // Cria o item de venda
-                            SaleItem saleItem = new SaleItem(productSale, quantitySale, priceSale);
-
-                            // Adiciona o item à venda
-                            sale.addItem(saleItem);
-
-                            // Atualiza o estoque
+                        for (int i = 1; i <= n; i++) {
+                            System.out.println("Digite o nome do produto #" + i + ": ");
+                            String productName = sc.nextLine();
+                            ElectronicProduct productSale = null;
+                            for (ElectronicProduct p : products) {
+                                if (p.getName().equalsIgnoreCase(productName)) {
+                                    productSale = p;
+                                    break;
+                                }
+                            }
+                            // Se o produto não for encontrado, exibe uma mensagem de erro e volta ao menu
+                            if (productSale == null) {
+                                System.out.println("Produto não encontrado!");
+                                break;
+                            }
+                            // Le a quantidade e o preço do item
+                            System.out.println("Digite a quantidade do produto #" + i + ": ");
+                            int quantitySale = sc.nextInt();
+                            System.out.println("Digite o preço do produto #" + i + ": ");
+                            Double priceSale = sc.nextDouble();
+                            sc.nextLine();
+                            // Atualiza o estoque do produto
                             productSale.removeFromStock(quantitySale);
+                            // Atualiza a lista de produtos
+                            products.set(products.indexOf(productSale), productSale);
+                            // Atualiza a lista de itens da venda
+                            saleItems.add(new SaleItem(productSale, quantitySale, priceSale));
+                            // Atualiza a lista de vendas
+                            sales.add(sale);
+                            System.out.println("Venda registrada com sucesso!");
 
-                            System.out.println("Item adicionado com sucesso!");
-                        } else {
-                            System.out.println("Estoque insuficiente para este produto!");
+                            break;
+
                         }
                     }
-
-                    // Adiciona a venda à lista
-                    sales.add(sale);
-
-                    System.out.println("Venda registrada com sucesso!");
-                    break;
 
                 case 4:
                     // Listar produtos
