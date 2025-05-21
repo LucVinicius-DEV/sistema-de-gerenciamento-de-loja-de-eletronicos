@@ -1,4 +1,4 @@
-package application;
+
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -101,71 +101,57 @@ public class Main {
                     Long id = sc.nextLong();
                     sc.nextLine(); // Consumir quebra de linha
 
-                    // Le a data e hora da venda
-                    System.out.println("Digite a data e hora da venda (dd/MM/yyyy HH:mm): ");
-                    String momentStr = sc.nextLine();
+                    // atribui data e hora do sistema a venda
+                    Date moment = new Date();
                     SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm");
-                    Date moment = sdf.parse(momentStr);
+                    System.out.println("Data e hora da venda: " + sdf.format(moment));
 
-                    // Le o nome do cliente
-                    System.out.println("Digite o nome do cliente: ");
-                    String customerName = sc.nextLine();
-                    Customer customerSale = null;
-                    for (Customer c : customers) {
-                        if (c.getName().equalsIgnoreCase(customerName)) {
-                            customerSale = c;
-                            break;
-                        }
-
-                        // Se o cliente não for encontrado, exibe uma mensagem de erro e volta ao menu
-                        if (customerSale == null) {
-                            System.out.println("Cliente não encontrado!");
-                            break;
-                        }
-                        // Criação do objeto Sale
-                        Sale sale = new Sale(id, moment, customerSale);
-
-                        // Le os itens da venda
-                        System.out.println("Digite o número de itens da venda: ");
-                        int n = sc.nextInt();
-                        sc.nextLine();
-
-                        for (int i = 1; i <= n; i++) {
-                            System.out.println("Digite o nome do produto #" + i + ": ");
-                            String productName = sc.nextLine();
-                            ElectronicProduct productSale = null;
-                            for (ElectronicProduct p : products) {
-                                if (p.getName().equalsIgnoreCase(productName)) {
-                                    productSale = p;
-                                    break;
-                                }
-                            }
-                            // Se o produto não for encontrado, exibe uma mensagem de erro e volta ao menu
-                            if (productSale == null) {
-                                System.out.println("Produto não encontrado!");
-                                break;
-                            }
-                            // Le a quantidade e o preço do item
-                            System.out.println("Digite a quantidade do produto #" + i + ": ");
-                            int quantitySale = sc.nextInt();
-                            System.out.println("Digite o preço do produto #" + i + ": ");
-                            Double priceSale = sc.nextDouble();
-                            sc.nextLine();
-                            // Atualiza o estoque do produto
-                            productSale.removeFromStock(quantitySale);
-                            // Atualiza a lista de produtos
-                            products.set(products.indexOf(productSale), productSale);
-                            // Atualiza a lista de itens da venda
-                            saleItems.add(new SaleItem(productSale, quantitySale, priceSale));
-                            // Atualiza a lista de vendas
-                            sales.add(sale);
-                            System.out.println("Venda registrada com sucesso!");
-
-                            break;
-
-                        }
+                    // Seleciona o cliente
+                    System.out.println("Selecione o cliente (digite o número correspondente): ");
+                    for (int i = 0; i < customers.size(); i++) {
+                        System.out.println((i + 1) + ". " + customers.get(i));
                     }
+                    int customerIndex = sc.nextInt() - 1;
+                    Customer selectedCustomer = customers.get(customerIndex);
+                    sc.nextLine();
+                    
+                    // Criação do objeto venda
+                    Sale sale = new Sale(id, moment, selectedCustomer);
 
+                    // Adiciona itens à venda
+                    System.out.println("Qual o produto da venda? (digite o número correspondente):");
+                    for (int i = 0; i < products.size(); i++) {
+                        System.out.println((i + 1) + ". " + products.get(i));
+                    }
+                    int productIndex = sc.nextInt() - 1;
+                    ElectronicProduct selectedProduct = products.get(productIndex);
+                    sc.nextLine();
+
+                    System.out.println("Qual a quantidade do produto?");
+                    int quantitySale = sc.nextInt();
+                    sc.nextLine();
+
+                    // Removendo produto do estoque apos a venda
+                    selectedProduct.removeFromStock(quantitySale);
+
+                    // Criação do objeto item de venda
+                    SaleItem saleItem = new SaleItem(selectedProduct, quantitySale, selectedProduct.getPrice());
+                    
+                    // Adiciona o item à venda
+                    sale.addItem(saleItem);
+
+                    // Adiciona a venda à lista
+                    sales.add(sale);
+
+                    // imprime relatorio da venda
+                    System.out.println(sale);
+                    System.out.println("----------------------------------");
+                    
+                    System.out.println("Venda registrada com sucesso!");
+                    break;
+
+                
+        
                 case 4:
                     // Listar produtos
                     System.out.println("\n===== PRODUTOS DISPONÍVEIS =====");
