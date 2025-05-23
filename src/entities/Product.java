@@ -66,16 +66,17 @@ public class Product {
     }
 
     /**
-     * Remove uma quantidade específica do estoque após uma venda
+     * Remove uma quantidade específica do estoque após uma venda.
+     * Verifica se há estoque suficiente antes de remover.
      * @param quantity Quantidade a ser removida
      * @return true se a operação foi bem-sucedida, false se não há estoque suficiente
      */
     public boolean removeFromStock(int quantity) {
         if (this.quantity >= quantity) {
             this.quantity -= quantity;
-            return true;
+            return true; // Remoção bem-sucedida
         }
-        return false;
+        return false; // Estoque insuficiente
     }
 
     /**
